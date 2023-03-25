@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+  <meta charset='UTF-8'>
+  <meta http-equiv='X-UA-Compatible' >
+  <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+  <title>index</title>
+  <script src='https://cdn.jsdelivr.net/npm/vue@2.6.11'></script>
+  <style>
+    .file_input{
+      display: flex;
+      flex-direction: column;
+    }
+    .myBody{
+      width: 100%;
+      padding: 20px;
+      border: 2px double rebeccapurple;
+    }
+  </style>
+</head>
+<body>
+  <div id='app'>
+    <div class="file_input">
+      <input type="file" @change="listener1"/>
+      <input type="file" @change="listener2"/>
+    </div>
+    <hr>
+    <div class="myBody">
+      <table border="1">
+        <tr>
+          <th>主文件名</th>
+          <th>子文件包含内容</th>
+        </tr>
+        <tr v-for = "(item,ind) in resultArray">
+          <td>{{array1[ind]}}</td>
+          <td>{{resultArray[ind].join('\n')}}</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+ 
+</body>
+<script>
+var vm = new Vue({
+  el:'#app',
+  data:{
+    array1:[],
+    array2:[],
+    resultArray:[]
+  },
+  methods:{
+    listener1:function(e){
+      let filePath = e.target.value;
+      let resuleFile = e.target.files[0];
+      if (filePath != null ) {
+        if (filePath.includes('.txt')){
+          //使用FileReader读取文件
+          let reader = new FileReader();
+          //提取纯文本
+          reader.readAsText(resuleFile,'utf-8');
+          reader.onload = (e=>{
+            let fileCount = e.target.result;
+            this.array1 = fileCount.split('\r\n');
+            console.log('fileCount',this.array1)
+
+            if (this.array2.length > 0){
+              this.getResult();
+            }
+          })
+        }else{
+          alert('选中的不是txt文件')
+        }
+      }else{
+        alert('未选择到文件')
+      }
+      console.log(e.target.value)
+    },
+    listener2:function(e){
+      let filePath = e.target.value;
+      let resuleFile = e.target.files[0];
+      if (filePath != null ) {
+        if (filePath.includes('.txt')){
+          //使用FileReader读取文件
+          let reader = new FileReader();
+          //提取纯文本
+          reader.readAsText(resuleFile,'utf-8');
+          reader.onload = (e=>{
+            let fileCount = e.target.result;
+
+            this.array2 = fileCount.split('\r\n');
+            console.log('fileCount', this.array2)
+
+            if (this.array1.length > 0){
+              this.getResult();
+            }
+          })
+          console.log('heh',filePath);
+        }else{
+          alert('选中的不是txt文件')
+        }
+      }else{
+        alert('未选择到文件')
+      }
+      console.log(e.target.value)
+    },
+    getResult:function() {
+      for (let item of this.array1) {
+        let tempArray = [];
+        for(let info of this.array2){
+          if (info.includes(item)){
+            tempArray.push(info);
+          }
+          console.log(item.includes(info))
+        }
+        this.resultArray.push(tempArray)
+      }
+      console.log('结果为',this.resultArray)
+    }
+  }
+ })
+</script>
+</html>
